@@ -103,23 +103,24 @@ class VolunteerStatus(Enum):
 ### 3.2 核心資料結構
 
 ```typescript
-// 預約記錄
-interface Reservation {
-    id: string;
-    status: ReservationStatus;
-    visitor: VisitorInfo;
-    visitDate: Date;
-    timeSlot: TimeSlot;
-    groupSize: number;
-    assignedVolunteers: Volunteer[];
-    metadata: {
-        source: 'web' | 'phone' | 'walk-in';
-        createdAt: Date;
-        updatedAt: Date;
-        statusHistory: StatusChange[];
-    };
-    requirements: SpecialRequirement[];
-}
+ // 預約記錄
+ interface Reservation {
+     id: string;
+     ...
+     metadata: {
+         source: 'web' | 'phone' | 'walk-in';
+         createdAt: Date;
+         updatedAt: Date;
+         statusHistory: StatusChange[];
+         // 新增 SMS 通知設定
+         smsNotification?: { 
+             enabled: boolean; // 是否啟用
+             triggeredBy: string; // 操作人員 ID (管理員或其授權者)
+             timestamp: Date; // 設定時間
+         };
+     };
+     ...
+ }
 
 // 志工班表
 interface VolunteerSchedule {
@@ -234,15 +235,16 @@ class MatchingEngine:
         return score
 ```
 
-#### 4.3.3 通知管理系統
-
-| 通知類型 | 觸發條件 | 接收對象 | 通知管道 |
-|---------|---------|---------|---------|
-| 預約確認 | 預約提交成功 | 預約者 | Email, SMS |
-| 審核結果 | 管理員審核完成 | 預約者 | Email, LINE |
-| 任務指派 | 媒合成功 | 志工 | LINE, Push |
-| 行前提醒 | 參觀前24小時 | 預約者、志工 | Email, SMS, LINE |
-| 狀態變更 | 任何狀態改變 | 相關人員 | 根據設定 |
++ #### 4.3.3 通知管理系統
++ - **手動 SMS 發送控制**: 在管理後台提供操作介面，允許「管理員」(承辦人) 或其授權同仁，針對單筆或多筆預約手動開啟或關閉 SMS 通知的發送。此設定將決定下方的通知管道是否啟用 SMS。
++ 
++ | 通知類型 | 觸發條件 | 接收對象 | 通知管道 |
++ |---------|---------|---------|---------|
++ | 預約確認 | 預約提交成功 | 預約者 | Email, SMS (可選) |
++ | 審核結果 | 管理員審核完成 | 預約者 | Email, LINE |
++ | 任務指派 | 媒合成功 | 志工 | LINE, Push |
++ | 行前提醒 | 參觀前24小時 | 預約者、志工 | Email, SMS (可選), LINE |
++ | 狀態變更 | 任何狀態改變 | 相關人員 | 根據設定 |
 
 ## 工作流程設計
 
