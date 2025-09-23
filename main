@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>臺東縣消防局預約系統流程圖 (已驗證版本)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .flow-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .section-title {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .mermaid {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: bold;
+        }
+        .tab:hover {
+            background: #f0f0f0;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚒 臺東縣消防局防災館預約系統流程圖</h1>
+                
+        <div class="flow-section">
+            <h2 class="section-title">📋 主要預約媒合流程</h2>
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('main', 0)">完整流程</button>
+                <button class="tab" onclick="showTab('main', 1)">狀態轉換</button>
+                <button class="tab" onclick="showTab('main', 2)">媒合邏輯</button>
+            </div>
+                        
+            <div id="main-0" class="tab-content active">
+                <div class="mermaid">
+sequenceDiagram
+    participant 民眾
+    participant 前端網頁
+    participant 後端伺服器
+    participant 媒合引擎
+    participant 管理者
+    participant 志工
+    participant 通知服務
+    Note over 民眾,通知服務: 🎯 階段一：預約申請
+    民眾->>前端網頁: 進入預約頁面
+    前端網頁->>後端伺服器: GET /api/available-slots
+    後端伺服器-->>前端網頁: 返回可預約時段
+    前端網頁-->>民眾: 顯示預約日曆
+    民眾->>前端網頁: 選擇日期時段<br/>填寫預約資訊
+    前端網頁->>前端網頁: 前端驗證資料
+    前端網頁->>後端伺服器: POST /api/reservations<br/>{visitor, date, timeSlot, groupSize}
+    後端伺服器->>後端伺服器: 驗證時段可用性<br/>建立預約記錄<br/>狀態: PENDING
+    後端伺服器->>通知服務: 觸發預約確認通知
+    通知服務-->>民眾: Email: 預約申請已收到
+    後端伺服器-->>前端網頁: 返回預約ID與狀態
+    前端網頁-->>民眾: 顯示申請成功訊息
+    Note over 民眾,通知服務: 🔍 階段二：審核與媒合
+    後端伺服器->>管理者: 推送待審核通知
+    管理者->>後端伺服器: GET /api/admin/pending-reservations
+    後端伺服器-->>管理者: 返回待審核清單
+    管理者->>後端伺服器: POST /api/admin/approve/{id}
+    後端伺服器->>後端伺服器: 更新狀態: AWAITING_VOLUNTEER
+    後端伺服器->>媒合引擎: 觸發媒合流程
+    媒合引擎->>媒合引擎: 查詢可用志工<br/>計算媒合分數<br/>生成推薦清單
+    alt 自動媒合成功
+        媒合引擎->>後端伺服器: 自動指派最佳志工
+        後端伺服器->>後端伺服器: 更新狀態: CONFIRMED
+        後端伺服器->>通知服務: 觸發多方通知
+        通知服務-->>志工: LINE: 新任務指派通知
+        通知服務-->>民眾: Email/SMS: 預約確認通知
+    else 需要手動媒合
+        媒合引擎->>管理者: 提供推薦志工清單
+        管理者->>後端伺服器: POST /api/admin/assign-volunteer
+        後端伺服器->>後端伺服器: 更新指派記錄
+        後端伺服器->>通知服務: 觸發通知
+        通知服務-->>志工: LINE: 任務邀請
+        志工->>後端伺服器: POST /api/volunteer/accept-task
+        後端伺服器->>後端伺服器: 更新狀態: CONFIRMED
+        通知服務-->>民眾: 最終確認通知
+    end
+    Note over 民眾,通知服務: 📅 階段三：行前準備
+    後端伺服器->>後端伺服器: 定時任務: 檢查24小時內預約
+    後端伺服器->>通知服務: 觸發行前提醒
+    通知服務-->>民眾: SMS/Email: 明日參觀提醒
+    通知服務-->>志工: LINE: 明日服務提醒
+    Note over 民眾,通知服務: ✅ 階段四：活動執行
+    志工->>後端伺服器: POST /api/volunteer/check-in
+    後端伺服器->>後端伺服器: 更新狀態: IN_PROGRESS
+    志工->>後端伺服器: POST /api/volunteer/complete-task
+    後端伺服器->>後端伺服器: 更新狀態: COMPLETED
+    後端伺服器->>通知服務: 觸發完成通知
+    通知服務-->>民眾: Email: 感謝參觀+意見調查
+                </div>
+            </div>
+                        
+            <div id="main-1" class="tab-content">
+                <div class="mermaid">
+stateDiagram-v2
+    [*] --> 草稿: 開始填寫
+    草稿 --> 待審核: 提交預約
+    草稿 --> [*]: 放棄
+    待審核 --> 等待媒合: 審核通過
+    待審核 --> 已拒絕: 審核不通過
+    待審核 --> 已取消: 用戶取消
+    等待媒合 --> 媒合中: 開始媒合
+    媒合中 --> 已確認: 媒合成功
+    媒合中 --> 媒合失敗: 無可用志工
+    媒合失敗 --> 等待媒合: 重新媒合
+    媒合失敗 --> 已取消: 超時取消
+    已確認 --> 進行中: 活動開始
+    已確認 --> 已取消: 取消預約
+    進行中 --> 已完成: 活動結束
+    已完成 --> 已評價: 提交評價
+    已評價 --> [*]
+    已拒絕 --> [*]
+    已取消 --> [*]
+                </div>
+            </div>
+            
+            <div id="main-2" class="tab-content">
+                <div class="mermaid">
+graph TD
+    subgraph "系統自動化媒合階段"
+        A[預約成立 / 審核通過] --> B{查詢符合時段的可用志工};
+        B -- 找不到任何志工 --> F[狀態更新: 媒合失敗<br/>並通知管理者];
+        B -- 找到一位或多位志工 --> C[依據公平性原則排序<br/>(服務時數低者優先、近期未服務者優先)];
+        C --> D{向排序第一的志工發送邀請<br/>(LINE/Email)};
+        D --> E{等待志工在24小時內回覆};
+        E -- 志工接受 --> G[狀態更新: 媒合成功<br/>發送確認通知給民眾與志工];
+        E -- 志工拒絕或超時 --> H{是否還有下一位志工?};
+        H -- 是 --> D;
+        H -- 否 --> F;
+    end
+
+    subgraph "管理者人工介入階段"
+        F --> I[管理者登入系統<br/>查看媒合失敗案件];
+        I --> J{手動聯繫其他志工或調整排班};
+        J -- 成功找到人選 --> K[手動指派志工];
+        J -- 仍找不到人選 --> L[聯繫預約民眾<br/>(協調換班或取消)];
+        K --> G;
+    end
+
+    G --> Z((成功));
+    L --> Y((結束));
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function showTab(prefix, index) {
+            const flowSection = document.querySelector('.flow-section');
+            if (flowSection) {
+                flowSection.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                flowSection.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                const allTabs = flowSection.querySelectorAll('.tab');
+                if (allTabs[index]) {
+                    allTabs[index].classList.add('active');
+                }
+
+                const targetContent = document.getElementById(`${prefix}-${index}`);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                    
+                    setTimeout(() => {
+                        const mermaidDiagram = targetContent.querySelector('.mermaid');
+                        if (mermaidDiagram) {
+                            mermaid.run({ nodes: [mermaidDiagram] });
+                        }
+                    }, 10);
+                }
+            }
+        }
+        
+        mermaid.initialize({ startOnLoad: false });
+
+        window.addEventListener('load', () => {
+            const firstDiagram = document.querySelector('.tab-content.active .mermaid');
+            if (firstDiagram) {
+                mermaid.run({ nodes: [firstDiagram] });
+            }
+        });
+    </script>
+</body>
+</html>
