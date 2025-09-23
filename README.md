@@ -280,6 +280,11 @@ sequenceDiagram
     S->>S: 驗證預約資料
     S->>A: 通知待審核
     A->>S: 審核通過
+    
+    opt 承辦人手動設定 SMS
+        A->>S: 針對此預約，啟用 SMS 通知
+    end
+
     S->>M: 觸發媒合流程
     
     M->>M: 查詢可用志工
@@ -288,13 +293,21 @@ sequenceDiagram
     
     alt 自動媒合模式
         M->>S: 自動指派最高分志工
-        S->>V: 發送任務通知
+        S->>V: 發送任務通知 (LINE, Push)
         V->>S: 確認接受任務
     else 手動媒合模式
         M->>A: 提供推薦名單
         A->>S: 手動選擇志工
-        S->>V: 發送任務邀請
+        S->>V: 發送任務邀請 (LINE, Push)
         V->>S: 回覆接受/拒絕
+    end
+    
+    S->>S: 更新預約狀態為「已確認」
+
+    alt SMS 通知已啟用
+        S->>C: 發送確認通知 (Email + SMS)
+    else SMS 通知未啟用
+        S->>C: 發送確認通知 (Email)
     end
     
     S->>C: 發送確認通知
