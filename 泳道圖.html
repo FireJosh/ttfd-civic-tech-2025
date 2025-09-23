@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>臺東縣消防局預約系統流程圖 (最終修正版)</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.1.0/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
     <style>
         body {
             font-family: 'Microsoft JhengHei', sans-serif;
@@ -113,7 +113,7 @@ sequenceDiagram
     前端網頁->>前端網頁: 前端驗證資料
     前端網頁->>後端伺服器: POST /api/reservations<br/>{visitor, date, timeSlot, groupSize}
     後端伺服器->>後端伺服器: 驗證時段可用性<br/>建立預約記錄<br/>狀態: PENDING
-    後端伺服器->>通知服務: 觸發預約確認通知
+    後端伺服器->>通知服務: 觸發預約申請通知
     通知服務-->>民眾: Email: 預約申請已收到
     後端伺服器-->>前端網頁: 返回預約ID與狀態
     前端網頁-->>民眾: 顯示申請成功訊息
@@ -122,6 +122,9 @@ sequenceDiagram
     管理者->>後端伺服器: GET /api/admin/pending-reservations
     後端伺服器-->>管理者: 返回待審核清單
     管理者->>後端伺服器: POST /api/admin/approve/{id}
+    opt 管理者手動啟用SMS通知
+        管理者->>後端伺服器: POST /api/admin/enable-sms/{id}
+    end
     後端伺服器->>後端伺服器: 更新狀態: AWAITING_VOLUNTEER
     後端伺服器->>媒合引擎: 觸發媒合流程
     媒合引擎->>媒合引擎: 查詢可用志工<br/>計算媒合分數<br/>生成推薦清單
@@ -130,7 +133,11 @@ sequenceDiagram
         後端伺服器->>後端伺服器: 更新狀態: CONFIRMED
         後端伺服器->>通知服務: 觸發多方通知
         通知服務-->>志工: LINE: 新任務指派通知
-        通知服務-->>民眾: Email/SMS: 預約確認通知
+        alt SMS通知已啟用
+            通知服務-->>民眾: Email/SMS: 預約確認通知
+        else SMS通知未啟用
+            通知服務-->>民眾: Email: 預約確認通知
+        end
     else 需要手動媒合
         媒合引擎->>管理者: 提供推薦志工清單
         管理者->>後端伺服器: POST /api/admin/assign-volunteer
@@ -139,7 +146,11 @@ sequenceDiagram
         通知服務-->>志工: LINE: 任務邀請
         志工->>後端伺服器: POST /api/volunteer/accept-task
         後端伺服器->>後端伺服器: 更新狀態: CONFIRMED
-        通知服務-->>民眾: 最終確認通知
+        alt SMS通知已啟用
+            通知服務-->>民眾: Email/SMS: 最終確認通知
+        else SMS通知未啟用
+            通知服務-->>民眾: Email: 最終確認通知
+        end
     end
     Note over 民眾,通知服務: 📅 階段三：行前準備
     後端伺服器->>後端伺服器: 定時任務: 檢查24小時內預約
@@ -213,23 +224,30 @@ graph TD
 
     <script>
         function showTab(prefix, index) {
+            // 找到包含所有分頁的父容器
             const flowSection = document.querySelector('.flow-section');
             if (flowSection) {
+                // 移除所有分頁按鈕的 active class
                 flowSection.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                // 隱藏所有分頁內容
                 flowSection.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
+                // 為點擊的分頁按鈕添加 active class
                 const allTabs = flowSection.querySelectorAll('.tab');
                 if (allTabs[index]) {
                     allTabs[index].classList.add('active');
                 }
 
+                // 顯示對應的分頁內容
                 const targetContent = document.getElementById(`${prefix}-${index}`);
                 if (targetContent) {
                     targetContent.classList.add('active');
                     
+                    // 延遲一小段時間再渲染 Mermaid 圖，確保元素已可見
                     setTimeout(() => {
                         const mermaidDiagram = targetContent.querySelector('.mermaid');
                         if (mermaidDiagram) {
+                            // 使用 mermaid.run API 重新渲染圖表
                             mermaid.run({ nodes: [mermaidDiagram] });
                         }
                     }, 10);
@@ -237,8 +255,10 @@ graph TD
             }
         }
         
+        // 初始化 Mermaid，設置頁面加載時不自動渲染
         mermaid.initialize({ startOnLoad: false });
 
+        // 當頁面完全加載後，手動渲染第一個可見的圖表
         window.addEventListener('load', () => {
             const firstDiagram = document.querySelector('.tab-content.active .mermaid');
             if (firstDiagram) {
