@@ -310,8 +310,6 @@ sequenceDiagram
         S->>C: 發送確認通知 (Email)
     end
     
-    S->>C: 發送確認通知
-    S->>S: 更新預約狀態
 ```
 
 ## 非功能性需求
