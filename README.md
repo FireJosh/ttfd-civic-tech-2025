@@ -83,7 +83,7 @@ class ReservationStatus(Enum):
     """預約狀態定義"""
     DRAFT = "draft"                    # 草稿（未完成填寫）
     PENDING = "pending"                # 待審核
-    AWAITING_VOLUNTEER = "awaiting"   # 等待志工媒合
+    AWAITING_VOLUNTEER = "awaiting"    # 等待志工媒合
     CONFIRMED = "confirmed"            # 已確認
     IN_PROGRESS = "in_progress"        # 進行中
     COMPLETED = "completed"            # 已完成
@@ -95,8 +95,8 @@ class VolunteerStatus(Enum):
     """志工狀態定義"""
     AVAILABLE = "available"            # 可服務
     ASSIGNED = "assigned"              # 已指派
-    ON_DUTY = "on_duty"               # 服務中
-    OFF_DUTY = "off_duty"             # 非服務時段
+    ON_DUTY = "on_duty"                # 服務中
+    OFF_DUTY = "off_duty"              # 非服務時段
     LEAVE = "leave"                    # 請假中
 ```
 
