@@ -14,6 +14,7 @@
             --light-sand: #fdfaf3;
             --dark-text: #333;
             --border-color: #e0e0e0;
+            --highlight-bg: #fff8e1;
         }
 
         html {
@@ -81,9 +82,69 @@
         .header .subtitle {
             color: #f0f0f0;
         }
+        
+        /* --- NEW: 即時賽程表 (Live Schedule) --- */
+        .live-schedule-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .schedule-day {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .schedule-day h3 {
+            font-size: 2.2rem;
+            text-align: center;
+            margin-top: 0;
+            color: var(--dark-text);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .schedule-event {
+            background-color: var(--light-sand);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary-blue);
+        }
+
+        .schedule-event .time {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent-orange);
+        }
+        
+        .schedule-event .description {
+            font-size: 1.1rem;
+            margin: 5px 0 0 0;
+        }
+
+        .schedule-event .description strong {
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+        
+        /* RWD for Schedule */
+        @media (max-width: 768px) {
+            .live-schedule-grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
 
-        /* --- 選手提醒事項 --- */
+        /* --- 選手重要提醒事項 (字體放大) --- */
+        #reminders h2 {
+            font-size: clamp(2.3rem, 6vw, 3.2rem); /* 放大標題字體 */
+        }
+
         .reminders-section {
             background: white;
             padding: 30px;
@@ -94,16 +155,17 @@
         .reminders-list {
             list-style-type: none;
             padding: 0;
-            font-size: 1.1rem;
         }
 
         .reminders-list li {
-            padding: 15px 10px;
+            padding: 18px 10px; /* 增加間距 */
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
+            font-size: 1.3rem; /* 放大內文字體 */
+            line-height: 1.7; /* 調整行高 */
         }
         
         .reminders-list li::before {
@@ -128,7 +190,7 @@
             color: var(--primary-blue);
         }
 
-        /* --- 選手卡片 --- */
+        /* --- 選手卡片 (倒數計時) --- */
         .athletes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -203,6 +265,25 @@
             display: block;
             margin-top: 5px;
         }
+        
+        /* --- NEW: 給教練的提醒 --- */
+        .coach-info-section {
+            background: var(--highlight-bg);
+            border: 2px solid var(--accent-orange);
+            padding: 30px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+        }
+        
+        .coach-info-section ul {
+            list-style-type: '👉';
+            padding-left: 30px;
+        }
+        
+        .coach-info-section li {
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
 
         /* --- 應援集氣區 --- */
         .cheer-section {
@@ -276,6 +357,72 @@
     </header>
 
     <div class="container">
+
+        <section id="live-schedule">
+            <h2>即時賽程表 LIVE SCHEDULE</h2>
+            <div class="live-schedule-grid">
+                <div class="schedule-day">
+                    <h3>9/27 (六)</h3>
+                    <div class="schedule-event">
+                        <p class="time">15:30 開始</p>
+                        <p class="description">各組賽事陸續開始</p>
+                    </div>
+                    <div class="schedule-event">
+                        <p class="time">15:30 後</p>
+                        <p class="description">男子新秀形體組 (<strong>杜佳憲, 謝明道</strong>)</p>
+                    </div>
+                    <div class="schedule-event">
+                        <p class="time">15:30 後</p>
+                        <p class="description">男子古典形體組 (<strong>翁立嚴</strong>)</p>
+                    </div>
+                    <div class="schedule-event">
+                        <p class="time">19:30</p>
+                        <p class="description">開幕典禮 & 頒獎</p>
+                    </div>
+                     <div class="schedule-event">
+                        <p class="time">19:30 後</p>
+                        <p class="description">男子健美組 (<strong>紀信安</strong>)</p>
+                    </div>
+                     <div class="schedule-event">
+                        <p class="time">19:30 後</p>
+                        <p class="description">男子形體組 (<strong>翁立嚴, 謝明道</strong>)</p>
+                    </div>
+                    <div class="schedule-event">
+                        <p class="time">賽事結束</p>
+                        <p class="description">全場總冠軍合影</p>
+                    </div>
+                </div>
+                <div class="schedule-day">
+                    <h3>9/28 (日)</h3>
+                    <div class="schedule-event">
+                        <p class="time">17:30 開始</p>
+                        <p class="description">各組賽事陸續開始</p>
+                    </div>
+                    <div class="schedule-event">
+                        <p class="time">17:30 後</p>
+                        <p class="description">男子青少年健美組 (<strong>王櫂星</strong>)</p>
+                    </div>
+                    <div class="schedule-event">
+                        <p class="time">17:30 後</p>
+                        <p class="description">男子青少年形體組 (<strong>王櫂星</strong>)</p>
+                    </div>
+                     <div class="schedule-event">
+                        <p class="time">17:30 後</p>
+                        <p class="description">男子資深形體組 (<strong>杜佳憲, 紀信安, 謝明道</strong>)</p>
+                    </div>
+                    <div class="schedule-event">
+                        <p class="time">賽事中段</p>
+                        <p class="description">大專組賽事</p>
+                    </div>
+                    <div class="schedule-event">
+                        <p class="time">賽事結束</p>
+                        <p class="description">全場總冠軍合影 & 閉幕</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
         <section id="reminders">
             <h2>選手重要提醒事項</h2>
             <div class="reminders-section">
@@ -291,7 +438,7 @@
             </div>
         </section>
 
-        <section id="schedule">
+        <section id="schedule-countdown">
             <h2>選手賽程與倒數</h2>
             <div class="athletes-grid">
                 <article class="athlete-card">
@@ -380,6 +527,21 @@
                 </article>
             </div>
         </section>
+        
+        <section id="coach-info">
+            <h2>給教練與後勤團隊的提醒</h2>
+            <div class="coach-info-section">
+                <ul>
+                    <li><strong>後台證件管理：</strong>確認團隊成員是否都有後台證，嚴格控管進出，避免非必要人員干擾選手。</li>
+                    <li><strong>時間掌控：</strong>密切關注大會賽程進度，提前 3-5 個量級開始為選手熱身、打油，避免匆忙上場。預留時間處理抽筋、補妝等突發狀況。</li>
+                    <li><strong>選手狀態監測：</strong>隨時觀察選手的身心狀態，適時提供水分、碳水化合物補充，並給予正向的心理鼓勵，幫助選手維持巔峰。</li>
+                    <li><strong>物品清單：</strong>協助選手再次確認比賽用品是否齊全：備用比賽服、毛巾、拖鞋、熱身用彈力帶、備賽食品、個人藥品等。</li>
+                    <li><strong>場地熟悉：</strong>提前熟悉後台動線，包括熱身區、上色區、上場入口與廁所位置，建立清晰的移動路線。</li>
+                    <li><strong>緊急聯絡人：</strong>將大會工作人員或主委的聯絡電話（蕭主委: 0930-536220）存在手機中，以備不時之需。</li>
+                </ul>
+            </div>
+        </section>
+
 
         <section id="cheer" class="cheer-section">
             <h2>為臺東隊集氣！</h2>
@@ -436,13 +598,13 @@
         });
 
         remindersList.addEventListener('click', function(e) {
-            if (e.target && e.target.nodeName === 'LI') {
-                const item = e.target;
-                const index = Array.from(listItems).indexOf(item);
-                item.classList.toggle('checked');
+            const listItem = e.target.closest('li');
+            if (listItem) {
+                const index = Array.from(listItems).indexOf(listItem);
+                listItem.classList.toggle('checked');
                 
                 // 將狀態儲存到 localStorage
-                if (item.classList.contains('checked')) {
+                if (listItem.classList.contains('checked')) {
                     localStorage.setItem('reminder_item_' + index, 'checked');
                 } else {
                     localStorage.removeItem('reminder_item_' + index);
