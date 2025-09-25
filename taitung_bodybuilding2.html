@@ -5,323 +5,352 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TAITUNG BODYBUILDING | PACIFIC CUP 2025</title>
     <style>
-        /* --- 全局樣式 --- */
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        /* --- Google 字體 --- */
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@400;700&display=swap');
 
+        /* --- 全局樣式與色彩變數 --- */
         :root {
-            --primary-blue: #005C97;
-            --secondary-orange: #F89B29;
-            --background-sand: #FDF8F0;
-            --text-dark: #2c3e50;
-            --text-light: #ffffff;
-            --card-shadow: rgba(0, 0, 0, 0.1);
+            --primary-blue: #005f73;
+            --secondary-blue: #0a9396;
+            --highlight-orange: #ee9b00;
+            --highlight-gold: #ffc300;
+            --light-sand: #f4f1de;
+            --dark-text: #212529;
+            --light-text: #ffffff;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: 'Noto Sans TC', sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: var(--background-sand);
-            color: var(--text-dark);
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--light-sand);
+            color: var(--dark-text);
+            overflow-x: hidden;
+        }
+
+        /* --- 標題與容器 --- */
+        h1, h2, h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
         }
 
         .container {
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: auto;
+            padding: 40px 20px;
         }
 
-        h1, h2, h3 {
-            font-weight: 900;
+        section h2 {
             text-align: center;
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 40px;
+            position: relative;
         }
         
-        h2 {
-            font-size: 2.5rem;
-            color: var(--primary-blue);
-            margin-bottom: 10px;
-            text-transform: uppercase;
+        section h2::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background-color: var(--highlight-orange);
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        h2 + p {
-            text-align: center;
-            margin-top: 0;
-            color: #7f8c8d;
-            margin-bottom: 50px;
-        }
-
-        /* --- 頁首英雄區塊 --- */
+        /* --- 頁首英雄區 --- */
         .hero {
-            background: linear-gradient(135deg, var(--secondary-orange) 0%, var(--primary-blue) 100%);
-            color: var(--text-light);
-            padding: 80px 20px;
+            height: 100vh;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1509316976254-b353d9a16434?q=80&w=1974&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             text-align: center;
+            color: var(--light-text);
+        }
+
+        .hero-content {
+            animation: fadeIn 2s ease-in-out;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 5rem;
             margin: 0;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-            animation: fadeInDown 1s ease-out;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
         }
 
         .hero p {
-            font-size: 1.2rem;
-            margin-top: 10px;
-            opacity: 0.9;
-            animation: fadeInUp 1s ease-out 0.5s;
-            animation-fill-mode: forwards;
-            opacity: 0;
+            font-size: 1.5rem;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 700;
+            color: var(--highlight-gold);
         }
 
-        /* --- 選手卡片區塊 --- */
-        .athletes-grid {
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- 選手卡片區 --- */
+        #athletes {
+             background-color: #ffffff;
+        }
+        .athlete-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
         }
 
-        .card-container {
-            perspective: 1000px;
-            height: 450px;
-        }
-
-        .card {
+        .flip-card {
+            background-color: transparent;
             width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.8s;
+            height: 400px;
+            perspective: 1000px;
             cursor: pointer;
         }
 
-        .card-container:hover .card {
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            border-radius: 15px;
+        }
+
+        .flip-card.is-flipped .flip-card-inner {
             transform: rotateY(180deg);
         }
 
-        .card-face {
+        .flip-card-front, .flip-card-back {
             position: absolute;
             width: 100%;
             height: 100%;
+            -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             border-radius: 15px;
-            box-shadow: 0 10px 20px var(--card-shadow);
             overflow: hidden;
         }
 
-        .card-front {
-            background-color: var(--text-light);
-            display: flex;
-            flex-direction: column;
+        .flip-card-front {
+            background-color: #bbb;
+            color: black;
         }
         
-        .card-front .card-image {
+        .flip-card-front img {
             width: 100%;
-            height: 70%;
+            height: 100%;
             object-fit: cover;
-            object-position: top;
-        }
-
-        .card-front .card-info {
-            padding: 20px;
-            text-align: center;
-            flex-grow: 1;
-        }
-
-        .card-front h3 {
-            margin: 10px 0 5px 0;
-            color: var(--primary-blue);
-            font-size: 1.5rem;
         }
         
-        .card-front p {
-            margin: 0;
-            color: var(--secondary-orange);
-            font-style: italic;
+        .card-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: white;
+            padding: 30px 10px 10px 10px;
+            font-size: 1.8rem;
+            font-family: 'Bebas Neue', sans-serif;
         }
-        
-        .card-back {
-            background: linear-gradient(135deg, var(--primary-blue), #00406b);
-            color: var(--text-light);
+
+        .flip-card-back {
+            background-color: var(--primary-blue);
+            color: white;
             transform: rotateY(180deg);
-            padding: 25px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
         
-        .card-back h3 {
-           margin-top: 0;
-           border-bottom: 2px solid var(--secondary-orange);
-           padding-bottom: 10px;
-           color: var(--text-light);
+        .flip-card-back h3 {
+            font-size: 2rem;
+            margin-top: 0;
+            color: var(--highlight-gold);
         }
-
-        .card-back ul {
+        
+        .flip-card-back ul {
             list-style: none;
             padding: 0;
-            flex-grow: 1;
+            text-align: left;
         }
-
-        .card-back li {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+        
+        .flip-card-back li {
+            background-color: var(--secondary-blue);
             padding: 10px;
             margin-bottom: 10px;
+            border-radius: 5px;
         }
         
-        .card-back .category {
+        .countdown {
+            font-size: 0.8rem;
             font-weight: 700;
-            color: var(--secondary-orange);
-        }
-        
-        .card-back .time, .card-back .countdown {
-            font-size: 0.9rem;
-            opacity: 0.9;
+            color: var(--highlight-gold);
+            margin-top: 5px;
+            display: block;
         }
 
-        /* --- 賽程表區塊 --- */
-        .timeline {
-            position: relative;
-            max-width: 800px;
-            margin: 50px auto;
+        /* --- 賽程表 --- */
+        #schedule {
+            background-color: var(--light-sand);
         }
-
-        .timeline::after {
-            content: '';
-            position: absolute;
-            width: 4px;
-            background-color: var(--primary-blue);
-            opacity: 0.2;
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            margin-left: -2px;
+        .schedule-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
         }
-
-        .timeline-item {
-            padding: 10px 40px;
-            position: relative;
-            width: 50%;
+        .day-column h3 {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            border-bottom: 3px solid var(--secondary-blue);
+            padding-bottom: 10px;
         }
-
-        .timeline-item:nth-child(odd) {
-            left: 0;
-        }
-
-        .timeline-item:nth-child(even) {
-            left: 50%;
-        }
-
-        .timeline-item::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            right: -12px;
-            background-color: var(--background-sand);
-            border: 4px solid var(--primary-blue);
-            top: 25px;
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        .timeline-item:nth-child(even)::after {
-            left: -10px;
-        }
-
-        .timeline-content {
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px var(--card-shadow);
-        }
-        
-        .timeline-content.highlight {
-            border: 2px solid var(--secondary-orange);
-            background-color: #fffaf0;
-        }
-        
-        .timeline-content h3 {
-             margin-top: 0;
-             color: var(--primary-blue);
-             text-align: left;
-        }
-        .timeline-content p {
-            margin-bottom: 0;
-        }
-
-        /* --- 應援區塊 --- */
-        .cheer-zone {
+        .event-item {
+            padding: 15px;
+            margin-bottom: 15px;
             background-color: #fff;
-            padding: 40px;
-            border-radius: 15px;
+            border-left: 5px solid var(--secondary-blue);
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .event-item.highlight {
+            border-left-color: var(--highlight-orange);
+            background-color: #fff3e0;
+        }
+        .event-time {
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        .event-title {
+            display: block;
+            margin-top: 5px;
+        }
+        
+        .highlight strong {
+            color: var(--highlight-orange);
+        }
+
+        /* --- 應援區 --- */
+        #cheer {
+            background-color: #ffffff;
             text-align: center;
-            box-shadow: 0 10px 20px var(--card-shadow);
-            margin-top: 50px;
         }
-        
-        .cheer-zone textarea {
-            width: 80%;
-            max-width: 500px;
-            height: 80px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            font-size: 1rem;
-            font-family: 'Noto Sans TC', sans-serif;
-            margin-bottom: 20px;
-            resize: vertical;
+        .cheer-container {
+            position: relative;
+            padding-top: 20px;
+            padding-bottom: 40px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
         }
-        
         .cheer-button {
-            background: linear-gradient(135deg, var(--secondary-orange), #ff7e5f);
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            font-family: 'Bebas Neue', sans-serif;
+            background-color: var(--highlight-orange);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: 700;
             border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        
         .cheer-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 15px rgba(248, 155, 41, 0.4);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-        
-        .cheer-counter {
-            margin-top: 30px;
-        }
-        
-        #cheer-value {
+        #cheer-count {
             font-size: 3rem;
-            font-weight: 900;
-            color: var(--primary-blue);
-            margin: 0 15px;
-            display: inline-block;
-            min-width: 100px;
+            font-weight: 700;
+            margin: 10px 0;
+            color: var(--highlight-gold);
+        }
+        .message-form {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        #message-input {
+            width: 50%;
+            padding: 10px;
+            border-radius: 20px;
+            border: 2px solid var(--light-sand);
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        #message-input::placeholder {
+            color: #ddd;
+        }
+        .message-form button {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            background-color: var(--highlight-gold);
+            color: var(--dark-text);
+            cursor: pointer;
+            font-weight: 700;
+        }
+        #message-board {
+            margin-top: 20px;
+            min-height: 50px;
         }
         
+        .bubble {
+            position: absolute;
+            background-color: rgba(255, 195, 0, 0.7);
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            animation: floatUp 8s linear forwards;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes floatUp {
+            from {
+                bottom: -50px;
+                opacity: 1;
+            }
+            to {
+                bottom: 100%;
+                opacity: 0;
+            }
+        }
+
+
         /* --- 頁尾 --- */
         footer {
-            background-color: var(--text-dark);
-            color: var(--text-light);
+            background-color: var(--primary-blue);
+            color: var(--light-sand);
             text-align: center;
             padding: 20px;
-            margin-top: 50px;
         }
         
-        /* --- 動畫 & 響應式設計 --- */
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        @media screen and (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .timeline::after { left: 20px; }
-            .timeline-item { width: 100%; padding-left: 60px; padding-right: 10px; }
-            .timeline-item:nth-child(even) { left: 0; }
-            .timeline-item::after { left: 10px; }
+        /* --- 響應式設計 --- */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            section h2 {
+                font-size: 2.5rem;
+            }
+            .schedule-container {
+                grid-template-columns: 1fr;
+            }
         }
 
     </style>
@@ -329,283 +358,279 @@
 <body>
 
     <header class="hero">
-        <h1>破浪而出 力撼太平洋</h1>
-        <p>臺東縣體育會健美委員會 | 2025 第二屆花蓮太平洋盃全國健美節</p>
+        <div class="hero-content">
+            <h1>破浪而出 力撼太平洋</h1>
+            <p>臺東縣體育會健美委員會 | 2025 第二屆花蓮太平洋盃</p>
+        </div>
     </header>
 
-    <main class="container">
-
-        <section id="athletes">
-            <h2>THE ATHLETES</h2>
-            <p>台東健美好手</p>
-
-            <div class="athletes-grid">
-                <div class="card-container">
-                    <div class="card">
-                        <div class="card-face card-front">
-                            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1470&auto=format&fit=crop" alt="杜佳憲" class="card-image">
-                            <div class="card-info">
-                                <h3>杜佳憲</h3>
-                                <p>"汗水是最好的補品"</p>
-                            </div>
+    <main>
+        <section id="athletes" class="container">
+            <h2>臺東健美戰隊 The Athletes</h2>
+            <div class="athlete-grid">
+                <div class="flip-card" data-athlete="du">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://images.unsplash.com/photo-1581009137052-c0a76a01dd42?q=80&w=2070&auto=format&fit=crop" alt="杜佳憲 訓練圖像">
+                            <div class="card-name">1. 杜佳憲</div>
                         </div>
-                        <div class="card-face card-back">
-                            <h3>參賽資訊</h3>
+                        <div class="flip-card-back">
+                            <h3>杜佳憲</h3>
                             <ul>
                                 <li>
-                                    <div class="category">男子新秀形體組 (178cm級)</div>
-                                    <div class="time">9月27日 (六) 15:30 後</div>
-                                    <div class="countdown" id="countdown-1"></div>
+                                    <strong>男子新秀形體組 (178cm級)</strong>
+                                    <span class="countdown" id="countdown-du-1">計算中...</span>
                                 </li>
                                 <li>
-                                    <div class="category">男子資深形體組 (40歲以上)</div>
-                                    <div class="time">9月28日 (日) 17:30 後</div>
-                                    <div class="countdown" id="countdown-2"></div>
+                                    <strong>男子資深形體組 (40歲+)</strong>
+                                    <span class="countdown" id="countdown-du-2">計算中...</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-container">
-                    <div class="card">
-                        <div class="card-face card-front">
-                             <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=1469&auto=format&fit=crop" alt="紀信安" class="card-image">
-                            <div class="card-info">
-                                <h3>紀信安</h3>
-                                <p>"超越昨天的自己"</p>
-                            </div>
+                <div class="flip-card" data-athlete="ji">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop" alt="紀信安 訓練圖像">
+                            <div class="card-name">2. 紀信安</div>
                         </div>
-                        <div class="card-face card-back">
-                            <h3>參賽資訊</h3>
+                        <div class="flip-card-back">
+                            <h3>紀信安</h3>
                             <ul>
                                 <li>
-                                    <div class="category">男子健美組 (80kg級)</div>
-                                    <div class="time">9月27日 (六) 19:30 後</div>
-                                    <div class="countdown" id="countdown-3"></div>
+                                    <strong>男子健美組 (80kg級)</strong>
+                                    <span class="countdown" id="countdown-ji-1">計算中...</span>
                                 </li>
                                 <li>
-                                    <div class="category">男子資深形體組 (40歲以上)</div>
-                                    <div class="time">9月28日 (日) 17:30 後</div>
-                                    <div class="countdown" id="countdown-4"></div>
+                                    <strong>男子資深形體組 (40歲+)</strong>
+                                    <span class="countdown" id="countdown-ji-2">計算中...</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-container">
-                    <div class="card">
-                        <div class="card-face card-front">
-                            <img src="https://images.unsplash.com/photo-1581009137042-c552e485697a?q=80&w=1470&auto=format&fit=crop" alt="翁立嚴" class="card-image">
-                            <div class="card-info">
-                                <h3>翁立嚴</h3>
-                                <p>"專注每一次的收縮"</p>
-                            </div>
+                <div class="flip-card" data-athlete="weng">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=2069&auto=format&fit=crop" alt="翁立嚴 訓練圖像">
+                            <div class="card-name">3. 翁立嚴</div>
                         </div>
-                        <div class="card-face card-back">
-                            <h3>參賽資訊</h3>
+                        <div class="flip-card-back">
+                            <h3>翁立嚴</h3>
                             <ul>
                                 <li>
-                                    <div class="category">男子古典形體組 (175cm級)</div>
-                                    <div class="time">9月27日 (六) 15:30 後</div>
-                                    <div class="countdown" id="countdown-5"></div>
+                                    <strong>男子古典形體組 (175cm級)</strong>
+                                    <span class="countdown" id="countdown-weng-1">計算中...</span>
                                 </li>
                                 <li>
-                                    <div class="category">男子形體組 (174cm級)</div>
-                                    <div class="time">9月27日 (六) 19:30 後</div>
-                                    <div class="countdown" id="countdown-6"></div>
+                                    <strong>男子形體組 (174cm級)</strong>
+                                    <span class="countdown" id="countdown-weng-2">計算中...</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
+
+                <div class="flip-card" data-athlete="wang">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?q=80&w=2069&auto=format&fit=crop" alt="王櫂星 訓練圖像">
+                            <div class="card-name">4. 王櫂星</div>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3>王櫂星</h3>
+                            <ul>
+                                <li>
+                                    <strong>男子青少年健美組 (+70kg)</strong>
+                                    <span class="countdown" id="countdown-wang-1">計算中...</span>
+                                </li>
+                                <li>
+                                    <strong>男子青少年形體組 (+174cm)</strong>
+                                    <span class="countdown" id="countdown-wang-2">計算中...</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flip-card" data-athlete="xie">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                           <img src="https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=1974&auto=format&fit=crop" alt="謝明道 訓練圖像">
+                            <div class="card-name">5. 謝明道</div>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3>謝明道</h3>
+                             <ul>
+                                <li>
+                                    <strong>男子新秀形體組 (174cm級)</strong>
+                                    <span class="countdown" id="countdown-xie-1">計算中...</span>
+                                </li>
+                                <li>
+                                    <strong>男子形體組 (174cm級)</strong>
+                                    <span class="countdown" id="countdown-xie-2">計算中...</span>
+                                </li>
+                                 <li>
+                                    <strong>男子資深形體組 (40歲+)</strong>
+                                    <span class="countdown" id="countdown-xie-3">計算中...</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="schedule" class="container">
+            <h2>即時賽程表 Live Schedule</h2>
+            <div class="schedule-container">
+                <div class="day-column">
+                    <h3>9/27 (六)</h3>
+                    <div class="event-item"><span class="event-time">15:30 開始</span><span class="event-title">各組賽事陸續開始</span></div>
+                    <div class="event-item highlight"><span class="event-time">15:30 後</span><span class="event-title">男子新秀形體組 (<strong>杜佳憲, 謝明道</strong>)</span></div>
+                    <div class="event-item highlight"><span class="event-time">15:30 後</span><span class="event-title">男子古典形體組 (<strong>翁立嚴</strong>)</span></div>
+                    <div class="event-item"><span class="event-time">19:30</span><span class="event-title">開幕典禮 & 頒獎</span></div>
+                    <div class="event-item highlight"><span class="event-time">19:30 後</span><span class="event-title">男子健美組 (<strong>紀信安</strong>)</span></div>
+                    <div class="event-item highlight"><span class="event-time">19:30 後</span><span class="event-title">男子形體組 (<strong>翁立嚴, 謝明道</strong>)</span></div>
+                    <div class="event-item"><span class="event-time">賽事結束</span><span class="event-title">全場總冠軍合影</span></div>
+                </div>
+                <div class="day-column">
+                    <h3>9/28 (日)</h3>
+                    <div class="event-item"><span class="event-time">17:30 開始</span><span class="event-title">各組賽事陸續開始</span></div>
+                    <div class="event-item highlight"><span class="event-time">17:30 後</span><span class="event-title">男子青少年健美組 (<strong>王櫂星</strong>)</span></div>
+                    <div class="event-item highlight"><span class="event-time">17:30 後</span><span class="event-title">男子青少年形體組 (<strong>王櫂星</strong>)</span></div>
+                    <div class="event-item highlight"><span class="event-time">17:30 後</span><span class="event-title">男子資深形體組 (<strong>杜佳憲, 紀信安, 謝明道</strong>)</span></div>
+                    <div class="event-item"><span class="event-time">賽事中段</span><span class="event-title">大專組賽事</span></div>
+                    <div class="event-item"><span class="event-time">賽事結束</span><span class="event-title">全場總冠軍合影 & 閉幕</span></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="cheer" class="container">
+             <h2>應援集氣區 Cheer Zone</h2>
+            <div class="cheer-container" id="cheer-area">
+                <p>為臺東戰隊注入能量！</p>
+                <button class="cheer-button" id="cheer-btn">點擊集氣！</button>
+                <p>目前集氣值</p>
+                <div id="cheer-count">0</div>
                 
-                <div class="card-container">
-                    <div class="card">
-                        <div class="card-face card-front">
-                            <img src="https://images.unsplash.com/photo-1605296867304-46d5465a13f1?q=80&w=1470&auto=format&fit=crop" alt="王櫂星" class="card-image">
-                            <div class="card-info">
-                                <h3>王櫂星</h3>
-                                <p>"青春就是我的武器"</p>
-                            </div>
-                        </div>
-                        <div class="card-face card-back">
-                            <h3>參賽資訊</h3>
-                            <ul>
-                                <li>
-                                    <div class="category">男子青少年健美組 (+70kg)</div>
-                                    <div class="time">9月28日 (日) 17:30 後</div>
-                                    <div class="countdown" id="countdown-7"></div>
-                                </li>
-                                <li>
-                                    <div class="category">男子青少年形體組 (+174cm)</div>
-                                    <div class="time">9月28日 (日) 17:30 後</div>
-                                    <div class="countdown" id="countdown-8"></div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-container">
-                    <div class="card">
-                        <div class="card-face card-front">
-                           <img src="https://images.unsplash.com/photo-1594737625787-a8a123c4a56a?q=80&w=1325&auto=format&fit=crop" alt="謝明道" class="card-image">
-                            <div class="card-info">
-                                <h3>謝明道</h3>
-                                <p>"經驗是我的盾牌"</p>
-                            </div>
-                        </div>
-                        <div class="card-face card-back">
-                            <h3>參賽資訊</h3>
-                            <ul>
-                                <li>
-                                    <div class="category">男子新秀形體組 (174cm級)</div>
-                                    <div class="time">9月27日 (六) 15:30 後</div>
-                                    <div class="countdown" id="countdown-9"></div>
-                                </li>
-                                <li>
-                                    <div class="category">男子形體組 (174cm級)</div>
-                                    <div class="time">9月27日 (六) 19:30 後</div>
-                                    <div class="countdown" id="countdown-10"></div>
-                                </li>
-                                <li>
-                                    <div class="category">男子資深形體組 (40歲以上)</div>
-                                    <div class="time">9月28日 (日) 17:30 後</div>
-                                    <div class="countdown" id="countdown-11"></div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="schedule">
-            <h2>LIVE SCHEDULE</h2>
-            <p>即時賽程亮點</p>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-content highlight">
-                        <h3>9月27日 (六) 15:30 後</h3>
-                        <p><strong>台東隊登場:</strong> 杜佳憲、翁立嚴、謝明道<br>男子新秀形體、男子古典形體</p>
-                    </div>
-                </div>
-                 <div class="timeline-item">
-                    <div class="timeline-content highlight">
-                        <h3>9月27日 (六) 19:30 後</h3>
-                        <p><strong>台東隊登場:</strong> 紀信安、翁立嚴、謝明道<br>男子健美、男子形體</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <h3>9月28日 (日) 17:30</h3>
-                        <p>第二日賽事開始</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content highlight">
-                        <h3>9月28日 (日) 17:30 後</h3>
-                        <p><strong>台東隊登場:</strong> 杜佳憲、紀信安、王櫂星、謝明道<br>男子青少年健美/形體、男子資深形體</p>
-                    </div>
-                </div>
-                 <div class="timeline-item">
-                    <div class="timeline-content">
-                        <h3>9月28日 (日) 閉幕</h3>
-                        <p>全場總冠軍頒獎與閉幕典禮</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="cheer-zone">
-            <h2>CHEER ZONE</h2>
-            <p>為台東選手集氣加油！</p>
-            <div class="cheer-zone">
-                <textarea placeholder="在這裡輸入你的加油訊息..."></textarea>
-                <br>
-                <button class="cheer-button">送出留言</button>
-                <div class="cheer-counter">
-                    <p>點擊下方按鈕，為選手注入能量！</p>
-                    <button class="cheer-button" id="cheer-btn">💪</button>
-                    <span id="cheer-value">1028</span>
-                    <p>目前集氣值</p>
-                </div>
+                <form class="message-form" id="message-form">
+                    <input type="text" id="message-input" placeholder="留下一句加油的話..." maxlength="30">
+                    <button type="submit">送出</button>
+                </form>
+                 <div id="message-board"></div>
             </div>
         </section>
 
     </main>
 
     <footer>
-        <p>&copy; 2025 Taitung Bodybuilding Fan Page. Let's Go Team Taitung!</p>
+        <p>&copy; 2025 臺東縣體育會健美委員會 | Power & Pride from Taitung</p>
     </footer>
 
     <script>
-        // --- 互動功能 Javascript ---
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- 翻轉卡片功能 ---
+            const cards = document.querySelectorAll('.flip-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    card.classList.toggle('is-flipped');
+                });
+            });
 
-        // 1. 倒數計時器
-        function startCountdown(targetDate, elementId) {
-            const target = new Date(targetDate).getTime();
-            const element = document.getElementById(elementId);
+            // --- 倒數計時器 ---
+            const targetDates = {
+                // 9月27日
+                'countdown-du-1': '2025-09-27T15:30:00',
+                'countdown-weng-1': '2025-09-27T15:30:00',
+                'countdown-xie-1': '2025-09-27T15:30:00',
+                'countdown-ji-1': '2025-09-27T19:30:00',
+                'countdown-weng-2': '2025-09-27T19:30:00',
+                'countdown-xie-2': '2025-09-27T19:30:00',
+                // 9月28日
+                'countdown-du-2': '2025-09-28T17:30:00',
+                'countdown-ji-2': '2025-09-28T17:30:00',
+                'countdown-wang-1': '2025-09-28T17:30:00',
+                'countdown-wang-2': '2025-09-28T17:30:00',
+                'countdown-xie-3': '2025-09-28T17:30:00',
+            };
 
-            if (!element) return;
-
-            const interval = setInterval(() => {
+            function updateCountdown() {
                 const now = new Date().getTime();
-                const distance = target - now;
 
-                if (distance < 0) {
-                    clearInterval(interval);
-                    element.innerHTML = "比賽進行中！";
-                    return;
+                for (const id in targetDates) {
+                    const countdownElement = document.getElementById(id);
+                    if (countdownElement) {
+                        const targetTime = new Date(targetDates[id]).getTime();
+                        const distance = targetTime - now;
+
+                        if (distance < 0) {
+                            countdownElement.innerHTML = "賽事已結束";
+                            continue;
+                        }
+
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        countdownElement.innerHTML = `倒數 ${days}天 ${hours}時 ${minutes}分 ${seconds}秒`;
+                    }
                 }
+            }
+            setInterval(updateCountdown, 1000);
+            updateCountdown();
+            
+            // --- 應援區功能 ---
+            const cheerBtn = document.getElementById('cheer-btn');
+            const cheerCount = document.getElementById('cheer-count');
+            const messageForm = document.getElementById('message-form');
+            const messageInput = document.getElementById('message-input');
+            const cheerArea = document.getElementById('cheer-area');
 
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                element.innerHTML = `倒數: ${days}天 ${hours}時 ${minutes}分 ${seconds}秒`;
-            }, 1000);
-        }
-
-        const date1 = '2025-09-27T15:30:00';
-        const date2 = '2025-09-28T17:30:00';
-        const date3 = '2025-09-27T19:30:00';
-
-        startCountdown(date1, 'countdown-1'); // 杜佳憲
-        startCountdown(date2, 'countdown-2'); // 杜佳憲
-        startCountdown(date3, 'countdown-3'); // 紀信安
-        startCountdown(date2, 'countdown-4'); // 紀信安
-        startCountdown(date1, 'countdown-5'); // 翁立嚴
-        startCountdown(date3, 'countdown-6'); // 翁立嚴
-        startCountdown(date2, 'countdown-7'); // 王櫂星
-        startCountdown(date2, 'countdown-8'); // 王櫂星
-        startCountdown(date1, 'countdown-9'); // 謝明道
-        startCountdown(date3, 'countdown-10'); // 謝明道
-        startCountdown(date2, 'countdown-11'); // 謝明道
-
-
-        // 2. 集氣按鈕
-        const cheerBtn = document.getElementById('cheer-btn');
-        const cheerValue = document.getElementById('cheer-value');
-
-        if(cheerBtn && cheerValue){
-            let count = 1028;
+            let count = 0;
             cheerBtn.addEventListener('click', () => {
-                count += Math.floor(Math.random() * 5) + 1; // 每次增加1-5的隨機數
-                cheerValue.textContent = count;
+                count++;
+                cheerCount.textContent = count;
                 
-                // 點擊動畫
-                cheerValue.style.transform = 'scale(1.2)';
-                cheerValue.style.transition = 'transform 0.1s ease';
+                // 增加點擊動畫
+                cheerBtn.style.transform = 'scale(0.9)';
                 setTimeout(() => {
-                    cheerValue.style.transform = 'scale(1)';
+                    cheerBtn.style.transform = 'scale(1)';
                 }, 100);
             });
-        }
-        
+            
+            messageForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const messageText = messageInput.value.trim();
+                if (messageText) {
+                    createBubble(messageText);
+                    messageInput.value = '';
+                }
+            });
+            
+            function createBubble(text) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.textContent = text;
+                
+                // 設置隨機水平位置
+                const randomX = Math.random() * 80 + 10; // 10% to 90%
+                bubble.style.left = `${randomX}%`;
+                
+                cheerArea.appendChild(bubble);
+                
+                // 8秒後移除氣泡
+                setTimeout(() => {
+                    bubble.remove();
+                }, 8000);
+            }
+        });
     </script>
+
 </body>
 </html>
