@@ -235,7 +235,8 @@ flowchart TD
         I \-- 否 \--\> L(本機驗證 QR Code 格式)  
         L \--\> K{驗證成功?}  
     end
-
+```
+```mermaid
     K \-- 否 \--\> G(提示: QR Code 錯誤)  
     K \-- 是 \--\> M(自動開啟相機)  
     M \--\> N(強制拍照)  
