@@ -84,6 +84,7 @@
 
 ## **6\. 資料模型 (Data Models \- PostgreSQL)**
 
+```python
 \-- 使用者 (管理員 & 送餐員)  
 CREATE TABLE "Users" (  
   "id" SERIAL PRIMARY KEY,  
@@ -139,9 +140,11 @@ CREATE TABLE "DeliveryRecords" (
   "status" VARCHAR(50) NOT NULL, \-- (例如：DELIVERED\_SELF, DELIVERED\_FAMILY, ANOMALY\_NO\_ANSWER)  
   "created\_at" TIMESTAMPTZ DEFAULT now()  
 );
+```
 
 ## **7\. 系統架構圖 (GCP Deployment Architecture)**
 
+```mermaid
 graph TB  
     subgraph "使用者 (Clients)"  
         Admin\[管理員 (Web Browser)\]  
@@ -189,11 +192,13 @@ graph TB
     Driver \-- (即時位置) \--\> WebSocketServer  
     Driver \-- (照片/紀錄) \--\> ApiServer  
     Driver \-- (導航) \--\> MapsAPI
+```
 
 ## **8\. 工作流程圖 (Workflow Diagrams)**
 
 ### **流程 1：管理員規劃路線**
 
+```mermaid
 flowchart TD  
     A\[開始\] \--\> B(登入管理員後台)  
     B \--\> C(進入「路線規劃」頁面)  
@@ -211,7 +216,9 @@ flowchart TD
     M \--\> Z\[結束\]
 
 ### **流程 2：送餐員送達回報 (含離線)**
+```
 
+```mermaid
 flowchart TD  
     A\[開始\] \--\> B(送餐員登入 App)  
     B \--\> C(查看「我的任務」列表)  
@@ -248,4 +255,5 @@ flowchart TD
         W \--\> T  
     end
 
-    T \--\> Z\[結束\]  
+    T \--\> Z\[結束\]
+```
