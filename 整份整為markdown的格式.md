@@ -32,6 +32,7 @@
 
 ## **4\. 功能需求 (Functional Requirements)**
 
+```python
 ### **4.1. 管理員後台 (Admin Web)**
 
 * **FR-A1: 登入 (Login)**  
@@ -81,6 +82,7 @@
 | **易用性 (Usability)** | **(高優先級)** 送餐員 App 介面必須極簡、直觀。字體需加大、按鈕需明確，確保長輩志工也能輕鬆使用。 |
 | **可靠性 (Reliability)** | 離線支援 (FR-D4) 必須可靠，確保資料不遺失。 |
 | **合規性 (Compliance)** | API 需處理圖片上傳，儲存服務 (GCS) 需設定正確的存取權限 (CORS)。 |
+```
 
 ## **6\. 資料模型 (Data Models \- PostgreSQL)**
 
@@ -145,53 +147,63 @@ CREATE TABLE "DeliveryRecords" (
 ## **7\. 系統架構圖 (GCP Deployment Architecture)**
 
 ```mermaid
-graph TB  
-    subgraph "使用者 (Clients)"  
-        Admin\[管理員 (Web Browser)\]  
-        Driver\[送餐員 (Mobile App)\]  
+graph TB
+    subgraph "使用者 (Clients)"
+        %% --- 修正: 節點文字包含 ( )，需加 " " --- %%
+        Admin["管理員 (Web Browser)"]
+        Driver["送餐員 (Mobile App)"]
     end
 
-    subgraph "Google Cloud Platform (GCP)"  
-        LB\[Cloud Load Balancer\]
+    subgraph "Google Cloud Platform (GCP)"
+        LB[Cloud Load Balancer]
 
-        subgraph "前端服務 (Frontend Services)"  
-            CDN\[Cloud CDN\]  
-            WebStorage\[Cloud Storage (Web 靜態檔案)\]  
+        subgraph "前端服務 (Frontend Services)"
+            CDN[Cloud CDN]
+            %% --- 修正: 節點文字包含 ( )，需加 " " --- %%
+            WebStorage["Cloud Storage (Web 靜態檔案)"]
         end
 
-        subgraph "後端服務 (Backend Services)"  
-            ApiServer\[Cloud Run (Node.js API 伺服器)\]  
-            WebSocketServer\[Cloud Run (Node.js WebSocket 伺服器)\]  
+        subgraph "後端服務 (Backend Services)"
+            %% --- 修正: 節點文字包含 ( )，需加 " " --- %%
+            ApiServer["Cloud Run (Node.js API 伺服器)"]
+            WebSocketServer["Cloud Run (Node.js WebSocket 伺服器)"]
         end
 
-        subgraph "資料儲存 (Data Storage)"  
-            DB\[Cloud SQL (PostgreSQL)\]  
-            ImageStorage\[Cloud Storage (照片儲存)\]  
+        subgraph "資料儲存 (Data Storage)"
+            %% --- 修正: 節點文字包含 ( )，需加 " " --- %%
+            DB["Cloud SQL (PostgreSQL)"]
+            ImageStorage["Cloud Storage (照片儲存)"]
         end
 
-        subgraph "GCP APIs"  
-            MapsAPI\[Google Maps Platform\<br/\>(Geocoding, Directions)\]  
-        end  
+        subgraph "GCP APIs"
+            %% --- 修正: 節點文字包含 <br/> 和 ( )，需加 " " --- %%
+            MapsAPI["Google Maps Platform<br/>(Geocoding, Directions)"]
+        end
     end
 
-    %% 流程  
-    Admin \-- HTTPS \--\> LB  
-    Driver \-- HTTPS/WSS \--\> LB
+    %% --- 流程 --- %%
+    
+    %% --- 修正: 連結文字包含 /，需加 " " --- %%
+    Admin -- "HTTPS" --> LB
+    Driver -- "HTTPS/WSS" --> LB
 
-    LB \-- /api/\* \--\> ApiServer  
-    LB \-- /ws \--\> WebSocketServer  
-    LB \-- /\* \--\> CDN
+    %% --- 修正: 連結文字包含 / *，需加 " " --- %%
+    LB -- "/api/*" --> ApiServer
+    LB -- "/ws" --> WebSocketServer
+    LB -- "/*" --> CDN
 
-    CDN \-- 讀取 \--\> WebStorage
+    CDN -- "讀取" --> WebStorage
 
-    ApiServer \-- 讀寫 \--\> DB  
-    ApiServer \-- 寫入 \--\> ImageStorage  
-    ApiServer \-- 呼叫 \--\> MapsAPI
+    ApiServer -- "讀寫" --> DB
+    ApiServer -- "寫入" --> ImageStorage
+    ApiServer -- "呼叫" --> MapsAPI
 
-    WebSocketServer \-- 讀寫 \--\> DB  
-    Driver \-- (即時位置) \--\> WebSocketServer  
-    Driver \-- (照片/紀錄) \--\> ApiServer  
-    Driver \-- (導航) \--\> MapsAPI
+    WebSocketServer -- "讀寫" --> DB
+    
+    %% --- 修正: 連結文字包含 ( )，需加 " " --- %%
+    Driver -- "(即時位置)" --> WebSocketServer
+    Driver -- "(照片/紀錄)" --> ApiServer
+    Driver -- "(導航)" --> MapsAPI
 ```
 
 ## **8\. 工作流程圖 (Workflow Diagrams)**
