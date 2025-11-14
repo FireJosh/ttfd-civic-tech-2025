@@ -1,0 +1,127 @@
+'''Merlaid
+sequenceDiagram
+    autonumber
+    participant Staff as 幕僚人員
+    participant UI as 前端儀表板 (Next.js)
+    participant API as 後端 API (FastAPI)
+    participant STT as AI 語音轉錄服務 (Whisper)
+    participant ETL as 資料介接服務
+    participant LLM as 報告生成引擎
+    participant Cmd as 指揮官
+
+    Note over Staff, UI: 階段一：資料輸入與處理
+    Staff->>UI: 上傳 EOC 會議錄音檔 (mp3/wav)
+    UI->>API: POST /api/upload (Audio File)
+    activate API
+    API->>STT: 異步發送轉錄任務 (Async Task)
+    API-->>UI: 回傳 "處理中" 狀態
+    deactivate API
+    
+    par 平行處理 (Parallel Processing)
+        rect rgb(240, 248, 255)
+            Note right of STT: 耗時較長 (約會議長度 1/6)
+            STT->>STT: 語音轉文字 + 聲紋辨識
+            STT-->>API: 回傳結構化逐字稿 (Transcript)
+        end
+        
+        rect rgb(255, 248, 240)
+            Note right of ETL: 耗時較短
+            API->>ETL: 觸發外部資料更新
+            ETL->>ETL: 呼叫 EMIC/氣象/水利 API
+            ETL->>ETL: 資料清洗與統計 (JSON/KML)
+            ETL-->>API: 回傳災情統計快照 (Snapshot)
+        end
+    end
+
+    Note over API, LLM: 階段二：AI 報告生成
+    API->>LLM: 發送 Prompt + 逐字稿 + 統計數據
+    activate LLM
+    LLM->>LLM: 生成摘要、擬辦事項、建議
+    LLM-->>API: 回傳處置報告初稿 (Draft)
+    deactivate LLM
+    
+    API->>UI: 推播通知 "報告草稿已就緒"
+    
+    Note over Staff, Cmd: 階段三：人工校對與決策
+    Staff->>UI: 檢視並編輯報告草稿
+    UI->>API: 提交審核 (Submit for Review)
+    
+    API->>Cmd: 通知指揮官 (Push Notification)
+    Cmd->>UI: 透過行動裝置預覽報告
+    
+    alt 審核通過
+        Cmd->>UI: 點擊 "簽核發布"
+        UI->>API: 更新狀態為 "Published"
+        API->>API: 生成 PDF/Word 並歸檔
+    else 退回修正
+        Cmd->>UI: 點擊 "退回" + 註記原因
+        UI->>Staff: 通知需修正
+    end
+'''
+
+====
+
+
+C4Context
+    title System Context Diagram - 災害應變處置報告自動化生成系統
+    
+    Person(staff, "幕僚人員", "負責錄音上傳、報告校對與系統操作")
+    Person(commander, "指揮官/決策者", "負責檢視災情儀表板與簽核報告")
+    
+    System(report_system, "自動化報告生成系統", "整合語音轉錄與外部數據，自動產製災害應變處置報告")
+    
+    System_Ext(emic, "EMIC 應變管理資訊系統", "提供災情案件數、傷亡統計、出動人車數據")
+    System_Ext(cwa, "中央氣象署 API", "提供即時雨量、風力預測與颱風路徑")
+    System_Ext(wra, "水利署水情 API", "提供河川水位與警戒資訊")
+    
+    Rel(staff, report_system, "上傳錄音、編輯草稿", "HTTPS")
+    Rel(commander, report_system, "檢視儀表板、簽核", "HTTPS/Mobile")
+    
+    Rel(report_system, emic, "介接災情數據", "API/JSON")
+    Rel(report_system, cwa, "介接氣象數據", "API/JSON")
+    Rel(report_system, wra, "介接水情數據", "API/JSON")
+    
+    UpdateRelStyle(staff, report_system, $textColor="blue", $lineColor="blue")
+    UpdateRelStyle(report_system, emic, $textColor="red", $lineColor="red")
+
+
+====
+
+
+C4Container
+    title Container Diagram - 系統技術組件架構
+    
+    Person(staff, "幕僚人員", "Web 使用者")
+    Person(commander, "指揮官", "Mobile/Web 使用者")
+
+    System_Boundary(c1, "災害應變報告生成平台") {
+        Container(web_app, "前端應用 (Frontend)", "Next.js 14, TypeScript", "提供操作介面、戰情儀表板、報告編輯器")
+        Container(api_gateway, "API 服務 (Backend)", "FastAPI (Python)", "處理業務邏輯、認證、路由分發")
+        
+        Container(stt_service, "語音轉錄服務 (Worker)", "OpenAI Whisper (Local/GPU)", "處理長時間會議錄音轉文字、聲紋辨識")
+        Container(llm_engine, "報告生成引擎", "LLM (GPT-4o / LLaMA)", "依據 Prompt 進行文本摘要與建議生成")
+        Container(etl_service, "資料介接服務", "Python Scripts", "定時抓取並清洗 EMIC/氣象資料")
+        
+        ContainerDb(db, "關聯式資料庫", "PostgreSQL", "儲存使用者資訊、報告 Metadata、修改紀錄")
+        ContainerDb(redis, "快取與佇列", "Redis", "處理異步任務佇列 (Celery/BullMQ)、Session 快取")
+        ContainerDb(obj_store, "物件儲存", "MinIO / S3", "儲存原始錄音檔、轉錄檔、生成的 PDF 報告")
+    }
+    
+    System_Ext(external_apis, "外部資料源 (EMIC/CWA)", "REST APIs")
+
+    Rel(staff, web_app, "使用", "HTTPS")
+    Rel(commander, web_app, "使用", "HTTPS")
+    
+    Rel(web_app, api_gateway, "API 呼叫", "JSON/HTTPS")
+    
+    Rel(api_gateway, redis, "寫入轉錄任務", "TCP")
+    Rel(stt_service, redis, "讀取任務", "TCP")
+    Rel(stt_service, obj_store, "讀取音檔/寫入逐字稿", "S3 API")
+    
+    Rel(api_gateway, llm_engine, "請求生成", "Internal API")
+    Rel(api_gateway, etl_service, "請求數據更新", "Internal API")
+    
+    Rel(etl_service, external_apis, "抓取數據", "HTTPS")
+    
+    Rel(api_gateway, db, "讀寫業務資料", "SQL")
+    Rel(api_gateway, obj_store, "上傳/下載檔案", "S3 API")
